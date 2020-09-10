@@ -1,0 +1,18 @@
+# Prisma Migrate lockfile v1
+
+20200902060224-init
+20200902062821-add-user-model
+20200902072205-reset-db
+20200902223133-add-vote-model
+20200903025808-add-project-model
+20200903030133-add-project-to-user
+20200903030658-fix-user
+20200903031453-edit
+20200903035153-just-do-project-owner
+20200903052222-add-assignees
+20200903052539-project-has-many-users
+20200903052739-rename-column
+20200903192104-add-unique-id
+20200903212539-remove-project-unique-id
+20200910213412-add-unique-field
+20200910220641-remove-unique-key

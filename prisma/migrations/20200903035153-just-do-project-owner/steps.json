@@ -1,0 +1,72 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "DeleteField",
+      "model": "User",
+      "field": "assigned_projects"
+    },
+    {
+      "tag": "DeleteDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "User",
+          "field": "projects"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "DeleteField",
+      "model": "Project",
+      "field": "assignees"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "Project",
+      "field": "assigneeId"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "Project",
+      "field": "owner",
+      "arity": "Required"
+    },
+    {
+      "tag": "DeleteArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Project",
+          "field": "owner"
+        },
+        "directive": "relation"
+      },
+      "argument": "name"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "Project",
+      "field": "ownerId",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Model",
+          "model": "Project",
+          "arguments": [
+            {
+              "name": "",
+              "value": "[ownerId, name]"
+            }
+          ]
+        },
+        "directive": "unique"
+      }
+    }
+  ]
+}

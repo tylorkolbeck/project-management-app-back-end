@@ -1,0 +1,60 @@
+type Query {
+  info: String!
+  feed: [Link!]!
+  users: [User!]!
+  projects: [Project!]!
+  project(projectId: ID!): Project!
+}
+
+type Mutation {
+  post(url: String, description: String!): Link!
+  signup(email: String!, password: String!, name: String!): AuthPayload
+  login(email: String!, password: String!): AuthPayload
+  vote(linkId: ID!): Vote
+  createProject(name: String!, description: String!): Project!
+  assignUserToProject(userIdToAssign: ID!, projectId: ID!): User!
+  removeSelfFromProject(projectId: ID!): User!
+  deleteProject(projectId: ID!): Project!
+}
+
+type Link {
+  id: ID!
+  description: String!
+  url: String!
+  postedBy: User
+  votes: [Vote!]!
+}
+
+type AuthPayload {
+  token: String
+  user: User
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  links: [Link!]!
+  projects: [Project!]
+  projectsAssigned: [Project!]
+}
+
+type Subscription {
+  newLink: Link
+  newVote: Vote
+}
+
+type Vote {
+  id: ID!
+  link: Link!
+  user: User!
+}
+
+type Project {
+  id: ID!
+  name: String!
+  description: String
+  owner: User
+  assignees: [User!]
+  ownerId: User!
+}

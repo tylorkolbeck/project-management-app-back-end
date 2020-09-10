@@ -1,0 +1,52 @@
+datasource db {
+  provider = "mysql"
+  url = "***"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Link {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  description String
+  url         String
+  postedBy    User?    @relation(fields: [postedById], references: [id])
+  postedById  Int?
+  votes       Vote[]
+}
+
+model User {
+  id                Int       @id @default(autoincrement())
+  createdAt         DateTime  @default(now())
+  name              String
+  email             String    @unique
+  password          String
+  links             Link[]
+  votes             Vote[]
+  assigned_projects Project[] @relation("assigned_projects")
+  projects          Project[] @relation("owned_projects")
+}
+
+model Project {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  name        String
+  description String
+  // OWNER NEEDS TO BE REQUIRED
+  owner       User?    @relation(name: "owned_projects", fields: [ownerId], references: [id])
+  ownerId     Int?
+  assignees   User[]   @relation("assigned_projects", fields: [assigneeId], references: [id])
+  assigneeId  Int?
+}
+
+model Vote {
+  id     Int  @id @default(autoincrement())
+  link   Link @relation(fields: [linkId], references: [id])
+  linkId Int
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  @@unique([linkId, userId])
+}
