@@ -1,3 +1,5 @@
+scalar Date
+
 type Query {
   info: String!
   feed: [Link!]!
@@ -15,6 +17,32 @@ type Mutation {
   assignUserToProject(userIdToAssign: ID!, projectId: ID!): User!
   removeSelfFromProject(projectId: ID!): User!
   deleteProject(projectId: ID!): Project!
+  createMilestone(projectId: ID!, title: String!, description: String, dueDate: Date)
+}
+
+type MileStone {
+  id: ID!
+  title: String
+  createdAt: Date
+  description: String
+  project: Project
+  dueDate: Date
+  tasks: [Task]
+}
+
+type Task {
+  id: ID!
+  createdAt: Date
+  name: String!
+  description: String
+  color: String
+  dateCompleted: Date
+  priority: String
+  sos: Boolean
+  assigned: [User]
+  creator: User
+  dueDate: Date
+  mileStone: MileStone!
 }
 
 type Link {

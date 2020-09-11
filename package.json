@@ -17,6 +17,7 @@
     "@prisma/client": "^2.6.0",
     "bcryptjs": "^2.4.3",
     "dotenv": "^8.2.0",
+    "graphql-iso-date": "^3.6.1",
     "graphql-yoga": "^1.18.3",
     "jsonwebtoken": "^8.5.1"
   },

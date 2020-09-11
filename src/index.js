@@ -7,6 +7,7 @@ const User = require("./resolvers/User");
 const Link = require("./resolvers/Link");
 const Vote = require("./resolvers/Vote");
 const Subscription = require("./resolvers/Subscription");
+const Date = require("./resolvers/customScalarResolver");
 
 const resolvers = {
   Query,
@@ -14,7 +15,8 @@ const resolvers = {
   User,
   Link,
   Subscription,
-  Vote
+  Vote,
+  Date
 };
 
 const prisma = new PrismaClient({

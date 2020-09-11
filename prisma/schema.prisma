@@ -26,18 +26,21 @@ model User {
   links            Link[]
   votes            Vote[]
   projects         Project[] // Projects this User owns
-  projectsAssigned Project[] @relation("projectsAssigned") // Projects this user is a part of
+  projectsAssigned Project[] @relation("projectsAssigned") // Projects this user is a member of
+  tasksAssigned    Task[]    @relation("tasksAssigned")
+  Task             Task[]
 }
 
 model Project {
-  id          Int      @id @default(autoincrement())
-  createdAt   DateTime @default(now())
+  id          Int         @id @default(autoincrement())
+  createdAt   DateTime    @default(now())
   name        String
   description String
-  owner       User     @relation(fields: [ownerId], references: [id])
+  owner       User        @relation(fields: [ownerId], references: [id])
   ownerId     Int
-  assignees   User[]   @relation("projectsAssigned", fields: [assigneeId], references: [id])
+  assignees   User[]      @relation("projectsAssigned", fields: [assigneeId], references: [id])
   assigneeId  Int?
+  Milestone   Milestone[]
   @@unique([ownerId, name])
 }
 
@@ -49,4 +52,33 @@ model Vote {
   userId Int
 
   @@unique([linkId, userId])
+}
+
+model Milestone {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  title       String
+  description String
+  project     Project? @relation(fields: [projectId], references: [id])
+  projectId   Int?
+  dueDate     DateTime
+  tasks       Task[]
+}
+
+model Task {
+  id            Int        @id @default(autoincrement())
+  createdAt     DateTime   @default(now())
+  name          String
+  description   String
+  color         String
+  dateCompleted DateTime
+  priority      String
+  sos           Boolean
+  assigned      User[]     @relation("tasksAssigned", fields: [assigneeId], references: [id])
+  assigneeId    Int?
+  creator       User?      @relation(fields: [creatorId], references: [id])
+  creatorId     Int?
+  dueDate       DateTime
+  milestone     Milestone? @relation(fields: [milestoneId], references: [id])
+  milestoneId   Int?
 }
