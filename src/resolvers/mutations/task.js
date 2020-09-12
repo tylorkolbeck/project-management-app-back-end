@@ -3,8 +3,7 @@ const { isAssociatedWithProject } = require("../../utils");
 async function addTaskToMilestone(parent, args, context) {
   const associatedWithProject = await isAssociatedWithProject(
     context,
-    args.projectId,
-    context.user.id
+    args.projectId
   );
 
   if (associatedWithProject) {
@@ -28,6 +27,24 @@ async function addTaskToMilestone(parent, args, context) {
   }
 }
 
+async function deleteTask(parent, args, context) {
+  const associatedWithProject = await isAssociatedWithProject(
+    context,
+    args.projectId
+  );
+
+  if (associatedWithProject) {
+    return context.prisma.task.delete({
+      where: {
+        id: Number(args.taskId)
+      }
+    });
+  } else {
+    throw new Error("You are not associated with this project");
+  }
+}
+
 module.exports = {
-  addTaskToMilestone
+  addTaskToMilestone,
+  deleteTask
 };

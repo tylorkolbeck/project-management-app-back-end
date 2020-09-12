@@ -1,11 +1,7 @@
 const { isProjectOwner } = require("../../utils");
 
 async function assignUserToProject(parent, args, context, info) {
-  const projectOwner = await isProjectOwner(
-    context,
-    args.projectId,
-    context.userId
-  );
+  const projectOwner = await isProjectOwner(context, args.projectId);
 
   if (!projectOwner) {
     throw new Error("You must be the project owner to assign users.");
@@ -77,7 +73,41 @@ async function createProject(parent, args, context, info) {
   return newProject;
 }
 
+async function project(parent, args, context, info) {
+  const projectOwner = await isProjectOwner(context, args.projectId);
+
+  if (projectOwner) {
+    return context.prisma.project.update({
+      where: {
+        id: Number(args.projectId)
+      },
+      data: {
+        description: args.description,
+        name: args.name
+      }
+    });
+  } else {
+    throw new Error("You need to be the project owner to make these changes");
+  }
+}
+
+async function deleteProject(parent, args, context) {
+  const projectOwner = await isProjectOwner(context, args.projectId);
+
+  if (projectOwner) {
+    return await context.prisma.project.delete({
+      where: {
+        id: Number(args.projectId)
+      }
+    });
+  } else {
+    throw new Error("You need to be the owner to delete this project");
+  }
+}
+
 module.exports = {
   assignUserToProject,
-  createProject
+  createProject,
+  project,
+  deleteProject
 };

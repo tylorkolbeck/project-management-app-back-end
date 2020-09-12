@@ -58,24 +58,6 @@ async function removeSelfFromProject(parent, args, context) {
   return deletedUser;
 }
 
-async function deleteProject(parent, args, context) {
-  const projectOwner = await isProjectOwner(
-    context,
-    args.projectId,
-    context.userId
-  );
-
-  if (projectOwner) {
-    return await context.prisma.project.delete({
-      where: {
-        id: Number(args.projectId)
-      }
-    });
-  } else {
-    throw new Error("You need to be the owner to delete this project");
-  }
-}
-
 module.exports = {
   ...userMutations,
   ...milestoneMutations,
@@ -83,6 +65,5 @@ module.exports = {
   ...projectMutations,
   post,
   vote,
-  removeSelfFromProject,
-  deleteProject
+  removeSelfFromProject
 };

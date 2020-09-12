@@ -42,20 +42,6 @@ function users(parent, args, context, info) {
   });
 }
 
-// TODO: MAKE SURE THAT THE PERSON RETRIEVING THE RECORD IS ALLOWED TO ACCESS THE PROJECT
-// function project(parent, args, context, info) {
-//   return context.prisma.project.findOne({
-//     where: {
-//       id: Number(args.projectId)
-//     },
-//     include: {
-//       assignees: true,
-//       owner: true,
-//       milestones: true
-//     }
-//   });
-// }
-
 // TODO: MAKE SURE THE USER IS LOGGED IN FIRST
 async function user(parent, args, context) {
   if (context.user.id) {
@@ -71,24 +57,9 @@ async function user(parent, args, context) {
   }
 }
 
-// function project(parent, args, context) {
-//   const project = isAssociatedWithProject(
-//     context,
-//     args.projectId,
-//     context.user.id
-//   );
-
-//   if (project) {
-//     return project;
-//   } else {
-//     throw new Error("You are not part of this project.");
-//   }
-// }
-
 module.exports = {
   feed,
   users,
-  // project,
   user,
   adminGetUsers,
   ...projectQueries

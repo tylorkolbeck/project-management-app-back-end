@@ -25,7 +25,7 @@ function authenticate(header) {
   throw new Error("Not Authenticated");
 }
 
-async function isProjectOwner(context, projectId, ownerId) {
+async function isProjectOwner(context, projectId) {
   const owner = await context.prisma.project
     .findOne({
       where: {
@@ -37,7 +37,7 @@ async function isProjectOwner(context, projectId, ownerId) {
   return owner.id === context.user.id;
 }
 
-async function isAssociatedWithProject(context, projectId, userId) {
+async function isAssociatedWithProject(context, projectId) {
   const projectToCheck = await context.prisma.project.findOne({
     where: {
       id: Number(projectId)
@@ -53,8 +53,9 @@ async function isAssociatedWithProject(context, projectId, userId) {
   }
 
   if (
-    projectToCheck.ownerId === userId ||
-    projectToCheck.assignees.filter((user) => user.id === userId).length > 0
+    projectToCheck.ownerId === context.user.id ||
+    projectToCheck.assignees.filter((user) => user.id === context.user.id)
+      .length > 0
   ) {
     return projectToCheck;
   } else {

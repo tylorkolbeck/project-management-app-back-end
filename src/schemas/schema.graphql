@@ -10,7 +10,7 @@ type Query {
 }
 
 type Mutation {
-  post(url: String, description: String!): Link!
+  # USER MUTAIONS
   signup(
     email: String!
     password: String!
@@ -18,19 +18,36 @@ type Mutation {
     avatar: String
   ): AuthPayload
   login(email: String!, password: String!): AuthPayload
-  vote(linkId: ID!): Vote
-  createProject(name: String!, description: String!): Project!
+  setAvatar(avatarUrl: String!): String! # set one update mutation
+  # PROJECT MUTATIONS
   assignUserToProject(userIdToAssign: ID!, projectId: ID!): User!
-  removeSelfFromProject(projectId: ID!): User!
+  createProject(name: String!, description: String!): Project!
   deleteProject(projectId: ID!): Project!
+  removeSelfFromProject(projectId: ID!): User!
+  project(projectId: ID!, description: String, name: String): Project!
+
+  # MILESTONE MUTATIONS
   createMilestone(
     projectId: ID!
     title: String!
     description: String
     dueDate: Date
   ): Milestone!
+  milestone(
+    milestoneId: ID!
+    projectId: ID!
+    title: String
+    description: String
+    dueDate: Date
+  ): Milestone!
+
+  #TASK MUTATIONS
   addTaskToMilestone(projectId: ID!, milestoneId: ID!, name: String!): Task!
-  setAvatar(avatarUrl: String!): String!
+  deleteTask(projectId: ID, taskId: ID!): Task!
+
+  # REFERENCE MUTATIONS
+  vote(linkId: ID!): Vote
+  post(url: String, description: String!): Link!
 }
 
 type Milestone {
