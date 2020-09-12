@@ -74,18 +74,6 @@ async function user(parent, args, context) {
 }
 
 function project(parent, args, context) {
-  // const userId = getUserId(context);
-  // const where = {
-  //   id: Number(args.projectId)
-  // };
-  // if (
-  //   args.projectId &&
-  //   isAssociatedWithProject(context, args.projectId, context.user.id)
-  // ) {
-  //   where = {
-  //     id: args.projectId
-  //   };
-  // }
   const project = isAssociatedWithProject(
     context,
     args.projectId,
