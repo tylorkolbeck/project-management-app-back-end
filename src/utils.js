@@ -48,6 +48,10 @@ async function isAssociatedWithProject(context, projectId, userId) {
     }
   });
 
+  if (!projectToCheck) {
+    return false;
+  }
+
   if (
     projectToCheck.ownerId === userId ||
     projectToCheck.assignees.filter((user) => user.id === userId).length > 0

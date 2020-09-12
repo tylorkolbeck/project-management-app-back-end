@@ -1,4 +1,5 @@
 const { getUserId, isAssociatedWithProject } = require("../utils");
+const projectQueries = require("./queries/project");
 
 // TODO: Remove this function before deploying
 async function adminGetUsers(parent, args, context, info) {
@@ -70,24 +71,25 @@ async function user(parent, args, context) {
   }
 }
 
-function project(parent, args, context) {
-  const project = isAssociatedWithProject(
-    context,
-    args.projectId,
-    context.user.id
-  );
+// function project(parent, args, context) {
+//   const project = isAssociatedWithProject(
+//     context,
+//     args.projectId,
+//     context.user.id
+//   );
 
-  if (project) {
-    return project;
-  } else {
-    throw new Error("You are not part of this project.");
-  }
-}
+//   if (project) {
+//     return project;
+//   } else {
+//     throw new Error("You are not part of this project.");
+//   }
+// }
 
 module.exports = {
   feed,
   users,
-  project,
+  // project,
   user,
-  adminGetUsers
+  adminGetUsers,
+  ...projectQueries
 };

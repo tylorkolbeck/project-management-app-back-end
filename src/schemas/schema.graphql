@@ -4,7 +4,7 @@ type Query {
   info: String!
   feed: [Link!]!
   users: [User!]!
-  project(projectId: ID!): Project!
+  project(projectId: ID!): Project
   user(userId: ID!): User!
   adminGetUsers: [User] # Delete before putting into production
 }
