@@ -1,6 +1,6 @@
 datasource db {
   provider = "mysql"
-  url      = env("MYSQL_STRING")
+  url = "***"
 }
 
 generator client {
@@ -29,7 +29,7 @@ model User {
   projectsAssigned Project[]   @relation("projectsAssigned") // Projects this user is a member of
   tasksAssigned    Task[]      @relation("tasksAssigned")
   Task             Task[]
-  milestone        Milestone[]
+  Milestone        Milestone[]
 }
 
 model Project {
@@ -41,7 +41,7 @@ model Project {
   ownerId     Int
   assignees   User[]      @relation("projectsAssigned", fields: [assigneeId], references: [id])
   assigneeId  Int?
-  milestones  Milestone[]
+  Milestone   Milestone[]
   @@unique([ownerId, name])
 }
 
@@ -72,11 +72,11 @@ model Task {
   id            Int        @id @default(autoincrement())
   createdAt     DateTime   @default(now())
   name          String
-  description   String?
-  color         String?
-  dateCompleted DateTime?
-  priority      String?
-  sos           Boolean?
+  description   String
+  color         String
+  dateCompleted DateTime
+  priority      String
+  sos           Boolean
   assigned      User[]     @relation("tasksAssigned", fields: [assigneeId], references: [id])
   assigneeId    Int?
   creator       User?      @relation(fields: [creatorId], references: [id])

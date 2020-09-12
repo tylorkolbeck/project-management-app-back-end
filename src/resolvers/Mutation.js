@@ -1,6 +1,11 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { APP_SECRET, getUserId, isProjectOwner } = require("../utils");
+const {
+  APP_SECRET,
+  getUserId,
+  isProjectOwner,
+  isAssociatedWithProject
+} = require("../utils");
 
 async function signup(parent, args, context, info) {
   const password = await bcrypt.hash(args.password, 10);
@@ -9,7 +14,9 @@ async function signup(parent, args, context, info) {
     data: { ...args, password }
   });
 
-  const token = jwt.sign({ userId: user.id }, APP_SECRET);
+  const token = jwt.sign({ userId: user.id }, APP_SECRET, {
+    algorithm: "HS256"
+  });
 
   return {
     token,
@@ -21,6 +28,7 @@ async function login(parent, args, context, info) {
   const user = await context.prisma.user.findOne({
     where: { email: args.email }
   });
+  console.log(user);
 
   if (!user) {
     throw new Error("Email does not exist.");
@@ -41,13 +49,13 @@ async function login(parent, args, context, info) {
 }
 
 function post(parent, args, context, info) {
-  const userId = getUserId(context);
+  // const userId = getUserId(context);
 
   const newLink = context.prisma.link.create({
     data: {
       url: args.url,
       description: args.description,
-      postedBy: { connect: { id: userId } }
+      postedBy: { connect: { id: context.userId } }
     }
   });
 
@@ -57,13 +65,13 @@ function post(parent, args, context, info) {
 }
 
 async function createProject(parent, args, context, info) {
-  const userId = getUserId(context);
+  // const userId = getUserId(context);
 
   const newProject = await context.prisma.project.create({
     data: {
       name: args.name,
       description: args.description ? args.description : "",
-      owner: { connect: { id: userId } }
+      owner: { connect: { id: context.userId } }
     },
     include: {
       owner: true
@@ -74,13 +82,13 @@ async function createProject(parent, args, context, info) {
 }
 
 async function vote(parent, args, context, info) {
-  const userId = getUserId(context);
+  // const userId = getUserId(context);
 
   const vote = await context.prisma.vote.findOne({
     where: {
       linkId_userId: {
         linkId: Number(args.linkId),
-        userId: userId
+        userId: context.userId
       }
     }
   });
@@ -102,8 +110,12 @@ async function vote(parent, args, context, info) {
 }
 
 async function assignUserToProject(parent, args, context, info) {
-  const userId = getUserId(context);
-  const projectOwner = await isProjectOwner(context, args.projectId, userId);
+  // const userId = getUserId(context);
+  const projectOwner = await isProjectOwner(
+    context,
+    args.projectId,
+    context.userId
+  );
 
   if (!projectOwner) {
     throw new Error("You must be the project owner to assign users.");
@@ -161,11 +173,11 @@ async function assignUserToProject(parent, args, context, info) {
 }
 
 async function removeSelfFromProject(parent, args, context) {
-  const userId = getUserId(context);
+  // const userId = getUserId(context);
 
   const deletedUser = await context.prisma.user.update({
     where: {
-      id: userId
+      id: context.userId
     },
     data: {
       projectsAssigned: {
@@ -177,8 +189,12 @@ async function removeSelfFromProject(parent, args, context) {
 }
 
 async function deleteProject(parent, args, context) {
-  const userId = getUserId(context);
-  const projectOwner = await isProjectOwner(context, args.projectId, userId);
+  // const userId = getUserId(context);
+  const projectOwner = await isProjectOwner(
+    context,
+    args.projectId,
+    context.userId
+  );
 
   if (projectOwner) {
     return await context.prisma.project.delete({
@@ -191,6 +207,75 @@ async function deleteProject(parent, args, context) {
   }
 }
 
+async function createMilestone(parent, args, context) {
+  // const userId = getUserId(context);
+  const associatedWithProject = await isAssociatedWithProject(
+    context,
+    args.projectId,
+    context.userId
+  );
+
+  if (associatedWithProject) {
+    return context.prisma.milestone.create({
+      data: {
+        title: args.title,
+        project: {
+          connect: {
+            id: Number(args.projectId)
+          }
+        },
+        creator: {
+          connect: {
+            id: context.userId
+          }
+        }
+      },
+      include: {
+        creator: true,
+        project: true
+      }
+    });
+  }
+}
+
+async function addTaskToMilestone(parent, args, context) {
+  const associatedWithProject = await isAssociatedWithProject(
+    context,
+    args.projectId,
+    context.user.id
+  );
+  console.log(
+    "ASSOCIATED",
+    associatedWithProject,
+    "USERID",
+    context.user.id,
+    "MILSTONEID",
+    args.milestoneId,
+    "TASK NAME",
+    args.name
+  );
+
+  if (associatedWithProject) {
+    return context.prisma.task.create({
+      data: {
+        name: args.name,
+        creator: {
+          connect: {
+            id: context.user.id
+          }
+        },
+        milestone: {
+          connect: {
+            id: Number(args.milestoneId)
+          }
+        }
+      }
+    });
+  } else {
+    throw new Error("You are not associated with this project");
+  }
+}
+
 module.exports = {
   signup,
   login,
@@ -199,5 +284,7 @@ module.exports = {
   createProject,
   assignUserToProject,
   removeSelfFromProject,
-  deleteProject
+  deleteProject,
+  createMilestone,
+  addTaskToMilestone
 };

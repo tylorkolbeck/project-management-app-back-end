@@ -1,0 +1,29 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "CreateField",
+      "model": "User",
+      "field": "milestone",
+      "type": "Milestone",
+      "arity": "List"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "User",
+      "field": "Milestone"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Project",
+      "field": "milestones",
+      "type": "Milestone",
+      "arity": "List"
+    },
+    {
+      "tag": "DeleteField",
+      "model": "Project",
+      "field": "Milestone"
+    }
+  ]
+}

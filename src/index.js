@@ -8,6 +8,9 @@ const Link = require("./resolvers/Link");
 const Vote = require("./resolvers/Vote");
 const Subscription = require("./resolvers/Subscription");
 const Date = require("./resolvers/customScalarResolver");
+const Project = require("./resolvers/Project");
+const Milestone = require("./resolvers/Milestone");
+const { authenticate } = require("./utils");
 
 const resolvers = {
   Query,
@@ -16,7 +19,9 @@ const resolvers = {
   Link,
   Subscription,
   Vote,
-  Date
+  Date,
+  Project,
+  Milestone
 };
 
 const prisma = new PrismaClient({
@@ -28,12 +33,21 @@ const pubsub = new PubSub();
 const server = new GraphQLServer({
   typeDefs: `./src/schemas/schema.graphql`,
   resolvers,
+
   context: (request) => {
+    let token = request.request.headers.authorization || null;
+    let user = {};
+
+    if (token) {
+      user.id = authenticate(token);
+    }
     return {
       ...request,
       prisma,
-      pubsub
+      pubsub,
+      user
     };
   }
 });
+
 server.start(() => console.log(`Server is running on http://localhost:4000`));

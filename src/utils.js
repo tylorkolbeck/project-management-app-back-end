@@ -15,6 +15,16 @@ function getUserId(context) {
   throw new Error("Not Authenticated");
 }
 
+function authenticate(header) {
+  if (header) {
+    const token = header.replace("Bearer ", "");
+    const { userId } = jwt.verify(token, APP_SECRET);
+    return userId;
+  }
+
+  throw new Error("Not Authenticated");
+}
+
 async function isProjectOwner(context, projectId, ownerId) {
   const owner = await context.prisma.project
     .findOne({
@@ -27,8 +37,31 @@ async function isProjectOwner(context, projectId, ownerId) {
   return owner.id === ownerId;
 }
 
+async function isAssociatedWithProject(context, projectId, userId) {
+  const projectToCheck = await context.prisma.project.findOne({
+    where: {
+      id: Number(projectId)
+    },
+    include: {
+      assignees: true,
+      owner: true
+    }
+  });
+
+  if (
+    projectToCheck.ownerId === userId ||
+    projectToCheck.assignees.filter((user) => user.id === userId).length > 0
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 module.exports = {
   APP_SECRET,
+  isProjectOwner,
+  isAssociatedWithProject,
   getUserId,
-  isProjectOwner
+  authenticate
 };

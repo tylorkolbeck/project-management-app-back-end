@@ -1,0 +1,35 @@
+{
+  "version": "0.3.14-fixed",
+  "steps": [
+    {
+      "tag": "UpdateField",
+      "model": "Task",
+      "field": "description",
+      "arity": "Optional"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "Task",
+      "field": "color",
+      "arity": "Optional"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "Task",
+      "field": "dateCompleted",
+      "arity": "Optional"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "Task",
+      "field": "priority",
+      "arity": "Optional"
+    },
+    {
+      "tag": "UpdateField",
+      "model": "Task",
+      "field": "sos",
+      "arity": "Optional"
+    }
+  ]
+}

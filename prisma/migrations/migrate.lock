@@ -16,3 +16,9 @@
 20200903212539-remove-project-unique-id
 20200910213412-add-unique-field
 20200910220641-remove-unique-key
+20200911005235-add-milestone-task-schema
+20200911015652-make-due-date-optional
+20200911021419-add-creator-to-milestone
+20200911024146
+20200911025918-fix-milestones-name
+20200912002646-make-task-fields-optional

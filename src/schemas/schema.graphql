@@ -4,8 +4,9 @@ type Query {
   info: String!
   feed: [Link!]!
   users: [User!]!
-  projects: [Project!]!
   project(projectId: ID!): Project!
+  user(userId: ID!): User!
+  adminGetUsers: User! # Delete before putting into production
 }
 
 type Mutation {
@@ -17,10 +18,16 @@ type Mutation {
   assignUserToProject(userIdToAssign: ID!, projectId: ID!): User!
   removeSelfFromProject(projectId: ID!): User!
   deleteProject(projectId: ID!): Project!
-  createMilestone(projectId: ID!, title: String!, description: String, dueDate: Date)
+  createMilestone(
+    projectId: ID!
+    title: String!
+    description: String
+    dueDate: Date
+  ): Milestone!
+  addTaskToMilestone(projectId: ID!, milestoneId: ID!, name: String!): Task!
 }
 
-type MileStone {
+type Milestone {
   id: ID!
   title: String
   createdAt: Date
@@ -28,6 +35,7 @@ type MileStone {
   project: Project
   dueDate: Date
   tasks: [Task]
+  creator: User!
 }
 
 type Task {
@@ -42,7 +50,7 @@ type Task {
   assigned: [User]
   creator: User
   dueDate: Date
-  mileStone: MileStone!
+  milestone: Milestone!
 }
 
 type Link {
@@ -60,9 +68,9 @@ type AuthPayload {
 
 type User {
   id: ID!
-  name: String!
-  email: String!
-  links: [Link!]!
+  name: String
+  email: String
+  links: [Link!]
   projects: [Project!]
   projectsAssigned: [Project!]
 }
@@ -85,4 +93,5 @@ type Project {
   owner: User
   assignees: [User!]
   ownerId: User!
+  milestones: [Milestone!]
 }
