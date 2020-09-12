@@ -1,11 +1,7 @@
 const { isAssociatedWithProject } = require("../../utils");
 
 async function project(parent, args, context) {
-  const isAssociated = await isAssociatedWithProject(
-    context,
-    args.projectId,
-    context.user.id
-  );
+  const isAssociated = await isAssociatedWithProject(context, args.projectId);
 
   if (isAssociated) {
     return context.prisma.project.findOne({

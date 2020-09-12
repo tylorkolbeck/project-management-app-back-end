@@ -1,4 +1,7 @@
-const { isAssociatedWithProject } = require("../../utils");
+const {
+  isAssociatedWithProject,
+  isAssociatedWithMilestone
+} = require("../../utils");
 
 async function createMilestone(parent, args, context) {
   const associatedWithProject = await isAssociatedWithProject(
@@ -26,6 +29,8 @@ async function createMilestone(parent, args, context) {
         project: true
       }
     });
+  } else {
+    throw new Error("You are not associated with this project");
   }
 }
 
@@ -53,7 +58,21 @@ async function milestone(parent, args, context) {
   }
 }
 
+async function deleteMilestone(parent, args, context) {
+  const isAssociated = await isAssociatedWithMilestone(context, args.id);
+  if (isAssociated) {
+    return context.prisma.milestone.delete({
+      where: {
+        id: Number(args.id)
+      }
+    });
+  } else {
+    throw new Error("You do not have permission to delete this milestone");
+  }
+}
+
 module.exports = {
   createMilestone,
-  milestone
+  milestone,
+  deleteMilestone
 };

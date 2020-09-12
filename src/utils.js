@@ -63,10 +63,23 @@ async function isAssociatedWithProject(context, projectId) {
   }
 }
 
+async function isAssociatedWithMilestone(context, id) {
+  const { projectId } = await context.prisma.milestone.findOne({
+    where: {
+      id: Number(id)
+    }
+  });
+
+  const isAssociated = await isAssociatedWithProject(context, projectId);
+
+  return isAssociated;
+}
+
 module.exports = {
   APP_SECRET,
   isProjectOwner,
   isAssociatedWithProject,
   getUserId,
-  authenticate
+  authenticate,
+  isAssociatedWithMilestone
 };

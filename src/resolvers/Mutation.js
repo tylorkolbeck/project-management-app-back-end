@@ -1,4 +1,3 @@
-const { isProjectOwner, isAssociatedWithProject } = require("../utils");
 const userMutations = require("./mutations/user");
 const milestoneMutations = require("./mutations/milestone");
 const taskMutations = require("./mutations/task");
