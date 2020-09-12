@@ -28,7 +28,6 @@ async function login(parent, args, context, info) {
   const user = await context.prisma.user.findOne({
     where: { email: args.email }
   });
-  console.log(user);
 
   if (!user) {
     throw new Error("Email does not exist.");
@@ -71,7 +70,7 @@ async function createProject(parent, args, context, info) {
     data: {
       name: args.name,
       description: args.description ? args.description : "",
-      owner: { connect: { id: context.userId } }
+      owner: { connect: { id: context.user.id } }
     },
     include: {
       owner: true
@@ -243,16 +242,6 @@ async function addTaskToMilestone(parent, args, context) {
     context,
     args.projectId,
     context.user.id
-  );
-  console.log(
-    "ASSOCIATED",
-    associatedWithProject,
-    "USERID",
-    context.user.id,
-    "MILSTONEID",
-    args.milestoneId,
-    "TASK NAME",
-    args.name
   );
 
   if (associatedWithProject) {

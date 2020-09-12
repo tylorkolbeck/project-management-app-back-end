@@ -1,4 +1,23 @@
-const { getUserId } = require("../utils");
+const { getUserId, isAssociatedWithProject } = require("../utils");
+
+// TODO: Remove this function before deploying
+async function adminGetUsers(parent, args, context, info) {
+  const users = await context.prisma.user.findMany({
+    include: {
+      projects: {
+        include: {
+          milestones: {
+            include: {
+              tasks: true
+            }
+          }
+        }
+      }
+    }
+  });
+
+  return users;
+}
 
 function feed(parent, args, context, info) {
   return context.prisma.link.findMany();
@@ -56,15 +75,33 @@ async function user(parent, args, context) {
 
 function project(parent, args, context) {
   // const userId = getUserId(context);
+  // const where = {
+  //   id: Number(args.projectId)
+  // };
+  // if (
+  //   args.projectId &&
+  //   isAssociatedWithProject(context, args.projectId, context.user.id)
+  // ) {
+  //   where = {
+  //     id: args.projectId
+  //   };
+  // }
 
-  return context.prisma.project.findOne({
-    where: { id: Number(args.projectId) }
-  });
+  if (isAssociatedWithProject(context, args.projectId, context.user.id)) {
+    return context.prisma.project.findOne({
+      where: {
+        id: Number(args.projectId)
+      }
+    });
+  } else {
+    throw new Error("You are not part of this project.");
+  }
 }
 
 module.exports = {
   feed,
   users,
   project,
-  user
+  user,
+  adminGetUsers
 };

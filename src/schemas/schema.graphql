@@ -6,7 +6,7 @@ type Query {
   users: [User!]!
   project(projectId: ID!): Project!
   user(userId: ID!): User!
-  adminGetUsers: User! # Delete before putting into production
+  adminGetUsers: [User] # Delete before putting into production
 }
 
 type Mutation {
