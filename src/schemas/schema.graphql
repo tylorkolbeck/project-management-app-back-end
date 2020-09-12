@@ -45,7 +45,7 @@ type Task {
   description: String
   color: String
   dateCompleted: Date
-  priority: String
+  priority: Priority
   sos: Boolean
   assigned: [User]
   creator: User
@@ -73,6 +73,7 @@ type User {
   links: [Link!]
   projects: [Project!]
   projectsAssigned: [Project!]
+  role: Role
 }
 
 type Subscription {
@@ -94,4 +95,15 @@ type Project {
   assignees: [User!]
   ownerId: User!
   milestones: [Milestone!]
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum Role {
+  USER
+  ADMIN
 }

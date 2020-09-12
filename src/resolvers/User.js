@@ -6,7 +6,7 @@ function links(parent, args, context) {
 
 function projectsAssigned(parent, args, context) {
   return context.prisma.user
-    .findOne({ where: { id: context.user.id } })
+    .findOne({ where: { id: parent.id } })
     .projectsAssigned();
 }
 

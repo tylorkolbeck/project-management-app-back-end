@@ -86,13 +86,14 @@ function project(parent, args, context) {
   //     id: args.projectId
   //   };
   // }
+  const project = isAssociatedWithProject(
+    context,
+    args.projectId,
+    context.user.id
+  );
 
-  if (isAssociatedWithProject(context, args.projectId, context.user.id)) {
-    return context.prisma.project.findOne({
-      where: {
-        id: Number(args.projectId)
-      }
-    });
+  if (project) {
+    return project;
   } else {
     throw new Error("You are not part of this project.");
   }

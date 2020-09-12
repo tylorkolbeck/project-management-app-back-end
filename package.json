@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "NODE_ENV=test",
     "migrate:save": "prisma migrate save --experimental",
     "migrate:up": "prisma migrate up --experimental",
     "generate": "npx prisma generate "

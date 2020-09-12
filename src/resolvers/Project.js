@@ -13,7 +13,18 @@ function owner(parent, args, context) {
     })
     .owner();
 }
+
+function assignees(parent, args, context) {
+  return context.prisma.project
+    .findOne({
+      where: {
+        id: parent.id
+      }
+    })
+    .assignees();
+}
 module.exports = {
   milestones,
-  owner
+  owner,
+  assignees
 };

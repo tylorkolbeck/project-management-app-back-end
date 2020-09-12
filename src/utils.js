@@ -52,7 +52,7 @@ async function isAssociatedWithProject(context, projectId, userId) {
     projectToCheck.ownerId === userId ||
     projectToCheck.assignees.filter((user) => user.id === userId).length > 0
   ) {
-    return true;
+    return projectToCheck;
   } else {
     return false;
   }
