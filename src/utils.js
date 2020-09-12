@@ -34,7 +34,7 @@ async function isProjectOwner(context, projectId, ownerId) {
     })
     .owner();
 
-  return owner.id === ownerId;
+  return owner.id === context.user.id;
 }
 
 async function isAssociatedWithProject(context, projectId, userId) {

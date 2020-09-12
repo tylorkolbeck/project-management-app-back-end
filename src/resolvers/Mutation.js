@@ -1,9 +1,10 @@
 const { isProjectOwner, isAssociatedWithProject } = require("../utils");
 const userMutations = require("./mutations/user");
+const milestoneMutations = require("./mutations/milestone");
+const taskMutations = require("./mutations/task");
+const projectMutations = require("./mutations/project");
 
 function post(parent, args, context, info) {
-  // const userId = getUserId(context);
-
   const newLink = context.prisma.link.create({
     data: {
       url: args.url,
@@ -17,26 +18,7 @@ function post(parent, args, context, info) {
   return newLink;
 }
 
-async function createProject(parent, args, context, info) {
-  // const userId = getUserId(context);
-
-  const newProject = await context.prisma.project.create({
-    data: {
-      name: args.name,
-      description: args.description ? args.description : "",
-      owner: { connect: { id: context.user.id } }
-    },
-    include: {
-      owner: true
-    }
-  });
-
-  return newProject;
-}
-
 async function vote(parent, args, context, info) {
-  // const userId = getUserId(context);
-
   const vote = await context.prisma.vote.findOne({
     where: {
       linkId_userId: {
@@ -62,75 +44,10 @@ async function vote(parent, args, context, info) {
   return newVote;
 }
 
-async function assignUserToProject(parent, args, context, info) {
-  // const userId = getUserId(context);
-  const projectOwner = await isProjectOwner(
-    context,
-    args.projectId,
-    context.userId
-  );
-
-  if (!projectOwner) {
-    throw new Error("You must be the project owner to assign users.");
-  }
-
-  const projectToEdit = await context.prisma.project.findOne({
-    where: {
-      id: Number(args.projectId)
-    },
-    include: {
-      assignees: true
-    }
-  });
-
-  const userToAssign = await context.prisma.user.findOne({
-    where: {
-      id: Number(args.userIdToAssign)
-    }
-  });
-
-  if (!userToAssign) {
-    throw new Error(`This user you tried to add does not exist.`);
-  }
-
-  if (!projectToEdit) {
-    throw new Error(`Project not found.`);
-  }
-
-  // If the user making the request is the owner of the project
-  // assigne the requested user
-  if (Number(projectToEdit.ownerId) === Number(args.userIdToAssign)) {
-    throw new Error(
-      "You can not assign yourself to your own project because you are the owner."
-    );
-  }
-
-  if (projectOwner) {
-    await context.prisma.project.update({
-      where: {
-        id: Number(args.projectId)
-      },
-      data: {
-        assignees: { connect: { id: Number(args.userIdToAssign) } }
-      },
-      include: {
-        assignees: true,
-        owner: true
-      }
-    });
-
-    return userToAssign;
-  } else {
-    throw new Error("You do not own this project");
-  }
-}
-
 async function removeSelfFromProject(parent, args, context) {
-  // const userId = getUserId(context);
-
   const deletedUser = await context.prisma.user.update({
     where: {
-      id: context.userId
+      id: context.user.id
     },
     data: {
       projectsAssigned: {
@@ -142,7 +59,6 @@ async function removeSelfFromProject(parent, args, context) {
 }
 
 async function deleteProject(parent, args, context) {
-  // const userId = getUserId(context);
   const projectOwner = await isProjectOwner(
     context,
     args.projectId,
@@ -160,73 +76,13 @@ async function deleteProject(parent, args, context) {
   }
 }
 
-async function createMilestone(parent, args, context) {
-  // const userId = getUserId(context);
-  const associatedWithProject = await isAssociatedWithProject(
-    context,
-    args.projectId,
-    context.userId
-  );
-
-  if (associatedWithProject) {
-    return context.prisma.milestone.create({
-      data: {
-        title: args.title,
-        project: {
-          connect: {
-            id: Number(args.projectId)
-          }
-        },
-        creator: {
-          connect: {
-            id: context.userId
-          }
-        }
-      },
-      include: {
-        creator: true,
-        project: true
-      }
-    });
-  }
-}
-
-async function addTaskToMilestone(parent, args, context) {
-  const associatedWithProject = await isAssociatedWithProject(
-    context,
-    args.projectId,
-    context.user.id
-  );
-
-  if (associatedWithProject) {
-    return context.prisma.task.create({
-      data: {
-        name: args.name,
-        creator: {
-          connect: {
-            id: context.user.id
-          }
-        },
-        milestone: {
-          connect: {
-            id: Number(args.milestoneId)
-          }
-        }
-      }
-    });
-  } else {
-    throw new Error("You are not associated with this project");
-  }
-}
-
 module.exports = {
   ...userMutations,
+  ...milestoneMutations,
+  ...taskMutations,
+  ...projectMutations,
   post,
   vote,
-  createProject,
-  assignUserToProject,
   removeSelfFromProject,
-  deleteProject,
-  createMilestone,
-  addTaskToMilestone
+  deleteProject
 };

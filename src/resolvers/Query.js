@@ -64,10 +64,7 @@ async function user(parent, args, context) {
       }
     });
 
-    return {
-      name: user.name,
-      id: user.id
-    };
+    return user;
   } else {
     throw new Error("You are not logged in.");
   }

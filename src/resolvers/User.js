@@ -11,10 +11,11 @@ function projectsAssigned(parent, args, context) {
 }
 
 function projects(parent, args, context) {
+  console.log(parent.id);
   return context.prisma.user
     .findOne({
       where: {
-        id: Number(context.user.id)
+        id: parent.id
       }
     })
     .projects();
