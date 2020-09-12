@@ -18,7 +18,9 @@ type Mutation {
     avatar: String
   ): AuthPayload
   login(email: String!, password: String!): AuthPayload
-  setAvatar(avatarUrl: String!): String! # set one update mutation
+  user(avatar: String, name: String, email: String, password: String): User!
+  deleteUser: User!
+
   # PROJECT MUTATIONS
   assignUserToProject(userIdToAssign: ID!, projectId: ID!): User!
   createProject(name: String!, description: String!): Project!

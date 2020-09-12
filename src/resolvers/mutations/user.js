@@ -45,21 +45,36 @@ async function login(parent, args, context, info) {
   };
 }
 
-async function setAvatar(parent, args, context, info) {
-  const updatedUser = await context.prisma.user.update({
+async function user(parent, args, context) {
+  let newPassword;
+  if (args.password) {
+    newPassword = await bcrypt.hash(args.password, 10);
+  }
+
+  return context.prisma.user.update({
     where: {
       id: context.user.id
     },
     data: {
-      avatar: args.avatarUrl
+      avatar: args.avatar,
+      name: args.name,
+      email: args.email,
+      password: newPassword
     }
   });
+}
 
-  return updatedUser.avatar;
+function deleteUser(parent, args, context) {
+  return context.prisma.user.delete({
+    where: {
+      id: context.user.id
+    }
+  });
 }
 
 module.exports = {
-  setAvatar,
   signup,
-  login
+  login,
+  user,
+  deleteUser
 };
